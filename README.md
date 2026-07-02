@@ -186,10 +186,27 @@ The tool computes a normalized score (0–100) based on categories loaded from `
 
 ---
 
+## Vercel Deployment
+
+This repository is pre-configured for one-click deployment on [Vercel](https://vercel.com) using Vercel Serverless Functions:
+
+1. **Configurations Added**:
+   - `api/index.py`: Serverless handler exporting the Flask application.
+   - `vercel.json`: Defines routes and compiles python assets using `@vercel/python`.
+2. **How to Deploy**:
+   - Install the Vercel CLI: `npm install -g vercel`
+   - Run the deployment command inside the project directory:
+     ```bash
+     vercel
+     ```
+   - Follow the prompts to log in and link the project. Vercel will build and deploy the app automatically!
+   - Alternatively, connect your GitHub repository directly to Vercel and it will auto-deploy on every push.
+
+---
+
 ## Future Enhancements
 
 1. **Header Validation**: Extract and verify SPF, DKIM, and DMARC headers from raw `.eml` files.
 2. **External Threat Intel Integration**: Query active reputations of extracted links using APIs like VirusTotal or Google Safe Browsing.
 3. **Machine Learning Model**: Train a classifier (e.g., TF-IDF + Naive Bayes or BERT embeddings) to work in tandem with rule-based heuristics to identify novel phishing emails.
 4. **Attachment Analysis**: Inspect attached files (hashes, extensions) for known malware indices or malicious macros.
-"# phishing-email-analyzer" 
