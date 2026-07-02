@@ -146,8 +146,15 @@ def create_app(config_path: Optional[str] = None) -> Flask:
     # ------------------------------------------------------------------
     # Logging & engine
     # ------------------------------------------------------------------
-    log_path = os.path.join(_ROOT, "logs", "analysis.log")
-    # Configures logging handler (root/file)
+    # Vercel serverless runs on a read-only filesystem – only /tmp is writable.
+    _on_vercel = bool(os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"))
+    if _on_vercel:
+        log_path = "/tmp/analysis.log"
+    else:
+        log_path = os.path.join(_ROOT, "logs", "analysis.log")
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
+    # Configures logging handler (file + console)
     setup_logger(log_file=log_path, verbose=False)
 
     cfg    = load_config(config_path)
@@ -215,6 +222,8 @@ def create_app(config_path: Optional[str] = None) -> Flask:
                     len(subject), len(body))
         result = engine.analyze(subject, body)
         _state["last_result"] = result
+        _state["last_subject"] = subject
+        _state["last_body"]    = body
         logger.info(
             "Web UI analysis complete. Score: %d/100, Risk Level: %s",
             result.final_score, result.risk_level,
@@ -236,6 +245,13 @@ def create_app(config_path: Optional[str] = None) -> Flask:
             for m in result.matches
         ]
 
+        # Persist to /tmp so download works across serverless invocations
+        try:
+            with open("/tmp/last_result.json", "w", encoding="utf-8") as fh:
+                json.dump({"subject": subject, "body": body, "payload": payload}, fh)
+        except Exception:
+            pass  # Non-fatal; in-memory _state will be used if available
+
         return jsonify(payload)
 
 
@@ -254,10 +270,24 @@ def create_app(config_path: Optional[str] = None) -> Flask:
 
     @app.route("/download/<fmt>")
     def download_report(fmt: str):
-        """Generate and download a report for the most recent analysis."""
+        """Generate and download a report for the most recent analysis.
+
+        On Vercel, each request may hit a fresh serverless instance so
+        _state is empty.  We fall back to /tmp/last_result.json which was
+        written by the /analyze handler in the same or a prior invocation.
+        """
         result = _state.get("last_result")
+
+        # Serverless fall-back: re-run analysis from persisted input
         if result is None:
-            abort(404, description="No analysis has been run yet.")
+            try:
+                with open("/tmp/last_result.json", "r", encoding="utf-8") as fh:
+                    saved = json.load(fh)
+                result = engine.analyze(
+                    saved.get("subject", ""), saved.get("body", "")
+                )
+            except Exception:
+                abort(404, description="No analysis has been run yet.")
 
         ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
 

@@ -2,11 +2,19 @@
   "version": 2,
   "builds": [
     {
+      "src": "phishing_analyzer/web/static/**",
+      "use": "@vercel/static"
+    },
+    {
       "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/phishing_analyzer/web/static/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "api/index.py"
