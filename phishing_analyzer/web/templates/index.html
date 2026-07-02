@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phishing Email Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <!-- ── Top Navigation Bar ── -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <div class="shield-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <span class="brand-name">Phishing Email Analyzer</span>
+      <span class="brand-badge">SOC TOOL</span>
+    </div>
+    <div class="navbar-right">
+      <span class="status-dot"></span>
+      <span class="status-text">System Online</span>
+    </div>
+  </header>
+
+  <!-- ── Main Split Layout ── -->
+  <main class="app-layout">
+
+    <!-- ════════════════════════════ LEFT PANEL ════════════════════════════ -->
+    <section class="panel panel-left" id="input-panel">
+
+      <div class="panel-header">
+        <div class="panel-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <h2 class="panel-title">Email Input</h2>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-paste" onclick="switchTab('paste')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          Paste Content
+        </button>
+        <button class="tab-btn" id="tab-upload" onclick="switchTab('upload')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload File
+        </button>
+      </div>
+
+      <!-- Tab: Paste -->
+      <div class="tab-content active" id="content-paste">
+        <div class="form-group">
+          <label class="form-label" for="subjectInput">Email Subject <span class="optional">(optional)</span></label>
+          <input
+            class="form-control"
+            id="subjectInput"
+            type="text"
+            placeholder="e.g. Urgent: Your account has been suspended"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bodyInput">Email Body</label>
+          <textarea
+            class="form-control textarea-body"
+            id="bodyInput"
+            placeholder="Paste the full email text here…"
+            spellcheck="false"
+          ></textarea>
+          <div class="char-count" id="charCount">0 characters</div>
+        </div>
+      </div>
+
+      <!-- Tab: Upload -->
+      <div class="tab-content" id="content-upload">
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-icon">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="8" y="8" width="48" height="48" rx="6"/>
+              <polyline points="24,28 32,20 40,28"/>
+              <line x1="32" y1="20" x2="32" y2="44"/>
+              <line x1="20" y1="52" x2="44" y2="52"/>
+            </svg>
+          </div>
+          <p class="drop-title">Drop your email file here</p>
+          <p class="drop-subtitle">Supports <strong>.txt</strong> and <strong>.pdf</strong> files (max 5 MB)</p>
+          <button class="btn-browse" onclick="document.getElementById('fileInput').click()">Browse File</button>
+          <input type="file" id="fileInput" accept=".txt,.pdf" style="display:none" onchange="handleFileSelect(this)" />
+        </div>
+        <div class="file-preview" id="filePreview" style="display:none">
+          <div class="file-info">
+            <div class="file-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <div class="file-meta">
+              <span class="file-name" id="fileName">-</span>
+              <span class="file-size" id="fileSize">-</span>
+            </div>
+            <button class="btn-remove" onclick="clearFile()">✕</button>
+          </div>
+        </div>
+
+        <!-- Image-only PDF hint banner -->
+        <div class="pdf-hint" id="pdfHint" style="display:none"></div>
+
+      </div><!-- end content-upload -->
+
+      <!-- Samples Quick-Load -->
+      <div class="samples-section">
+        <div class="samples-label">Quick Load Sample</div>
+        <div class="samples-grid">
+          <button class="sample-btn phishing" onclick="loadSample(1)" title="PayPal Phishing">PayPal Scam</button>
+          <button class="sample-btn phishing" onclick="loadSample(2)" title="IRS Refund Scam">IRS Refund</button>
+          <button class="sample-btn phishing" onclick="loadSample(3)" title="Microsoft Alert Phishing">MS Alert</button>
+          <button class="sample-btn legit" onclick="loadSample(4)" title="Legitimate Team Email">Team Sync</button>
+          <button class="sample-btn legit" onclick="loadSample(5)" title="Legitimate GitHub Email">GitHub</button>
+        </div>
+      </div>
+
+      <!-- Analyze Button -->
+      <button class="btn-analyze" id="analyzeBtn" onclick="runAnalysis()">
+        <span class="btn-text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Analyze Email
+        </span>
+        <span class="btn-spinner" style="display:none">
+          <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          Analyzing…
+        </span>
+      </button>
+
+    </section>
+
+    <!-- ═══════════════════════════ RIGHT PANEL ═══════════════════════════ -->
+    <section class="panel panel-right" id="results-panel">
+
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">
+          <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="40" cy="40" r="36"/>
+            <path d="M40 22v18l10 10"/>
+            <circle cx="40" cy="62" r="2" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3>No Analysis Yet</h3>
+        <p>Paste an email or upload a file on the left,<br/>then click <strong>Analyze Email</strong>.</p>
+      </div>
+
+      <!-- Results (hidden until analysis) -->
+      <div class="results-container" id="resultsContainer" style="display:none">
+
+        <!-- Score Gauge + Risk Badge -->
+        <div class="score-section">
+          <div class="gauge-wrapper">
+            <svg class="gauge-svg" viewBox="0 0 200 120">
+              <!-- Background arc -->
+              <path class="gauge-track" d="M20 110 A90 90 0 0 1 180 110" stroke-width="14" fill="none"/>
+              <!-- Score arc -->
+              <path class="gauge-bar" id="gaugeBar" d="M20 110 A90 90 0 0 1 180 110" stroke-width="14" fill="none"
+                    stroke-dasharray="283" stroke-dashoffset="283"/>
+              <!-- Center text -->
+              <text class="gauge-score" id="gaugeScore" x="100" y="100" text-anchor="middle" dominant-baseline="middle">0</text>
+              <text class="gauge-label" x="100" y="118" text-anchor="middle">/100</text>
+            </svg>
+            <div class="risk-badge" id="riskBadge">–</div>
+          </div>
+
+          <!-- Category Scores Bar -->
+          <div class="category-bars" id="categoryBars"></div>
+        </div>
+
+        <!-- Summary Row -->
+        <div class="summary-row" id="summaryRow"></div>
+
+        <!-- Indicators Section -->
+        <div class="section-header">
+          <h3 class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            Phishing Indicators
+          </h3>
+          <span class="indicator-count" id="indicatorCount">0 found</span>
+        </div>
+        <div class="indicators-list" id="indicatorsList"></div>
+
+        <!-- Download Buttons -->
+        <div class="download-row">
+          <button class="btn-download json" onclick="downloadReport('json')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download JSON
+          </button>
+          <button class="btn-download pdf" onclick="downloadReport('pdf')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Download PDF
+          </button>
+        </div>
+
+        <!-- Log Console -->
+        <div class="section-header" style="margin-top: 24px">
+          <h3 class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/>
+              <line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/>
+            </svg>
+            Analysis Logs
+          </h3>
+          <button class="btn-refresh" onclick="refreshLogs()">
+            <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+        <div class="log-console" id="logConsole">
+          <div class="log-line">Waiting for analysis…</div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Error Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

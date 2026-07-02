@@ -1,0 +1,10 @@
+rich>=13.0.0
+PyYAML>=6.0
+reportlab>=4.0.0
+pytest>=7.0.0
+Flask>=3.0.0
+pypdf>=4.0.0
+flask-cors>=4.0.0
+pymupdf>=1.24.0
+pdfminer.six>=20221105
+# pytesseract>=0.3.10  # Optional: enables OCR for image-only PDFs (requires Tesseract binary)

@@ -1,0 +1,15 @@
+Subject: GitHub Security Advisory update for dependency-check
+From: noreply@github.com
+
+Hello,
+
+This is an automated notification regarding the security advisory GHSA-xxxx-yyyy-zzzz. 
+
+A vulnerability has been identified in a dependency used by one of your repositories. Maintainers have released a new version that addresses this issue.
+
+Please review the details of this advisory and update your dependencies to the latest recommended version. You can find full details on the GitHub Advisory Database page.
+
+No action is needed if you have already updated your repository dependencies.
+
+Thank you,
+The GitHub Security Team

@@ -1,0 +1,15 @@
+Subject: Security Alert: Unauthorized password change request
+From: security-admin@microsoft-office-alert.fit
+
+Dear Client,
+
+We received an immediate request to change the password for your corporate login. 
+
+If this was not you, your account may have been compromised by an unauthorized party. You must log in to our verification center to cancel the request and reset your credentials.
+
+Click here to verify your account:
+http://192.168.4.15/microsoft/login
+
+You must enter your current password, PIN, and OTP code to authenticate. If you do not perform identity verification, your email access will be shut down and restricted immediately.
+
+Office Admin Center

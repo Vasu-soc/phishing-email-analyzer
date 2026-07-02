@@ -1,0 +1,15 @@
+Subject: Urgent action required: Your account is suspended!
+From: paypal-support@secure-update.xyz
+
+Dear Customer,
+
+We noticed some unauthorized login attempts to your PayPal account from a location outside your home country. For your security, we have temporarily suspended your account.
+
+To restore access, you must verify your identity. Please click on the link below and update your information immediately:
+
+http://paypal.com.verification-center.xyz/login.php
+
+Failure to update your account details within 24 hours will result in permanent account termination.
+
+Thank you,
+PayPal Security Team

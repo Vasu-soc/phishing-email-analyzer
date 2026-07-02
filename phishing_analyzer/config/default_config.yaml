@@ -1,0 +1,125 @@
+# Default configuration for Phishing Email Analyzer
+
+# Weights assigned to each indicator category. The scoring engine can either sum them
+# or run a normalized weighted calculation.
+weights:
+  urgency: 15
+  suspicious_url: 25
+  generic_greeting: 10
+  sensitive_request: 25
+  social_engineering: 25
+
+# Thresholds for overall risk level determination
+thresholds:
+  low: 15
+  medium: 35
+  high: 60
+  very_high: 80
+
+# Specific configurations for each detector
+detectors:
+  urgency:
+    keywords:
+      - "urgent"
+      - "immediate action"
+      - "action required"
+      - "suspended"
+      - "suspend"
+      - "terminate"
+      - "unauthorized"
+      - "compromised"
+      - "final notice"
+      - "security alert"
+      - "expire"
+      - "critical update"
+      - "immediate response"
+      - "consequences"
+      - "restricted"
+      - "blocked"
+      - "shut down"
+      - "legal action"
+
+  greeting:
+    keywords:
+      - "dear customer"
+      - "dear user"
+      - "dear client"
+      - "dear member"
+      - "valued customer"
+      - "valued member"
+      - "attention customer"
+      - "dear account holder"
+      - "dear policy holder"
+      - "customer support update"
+
+  sensitive_request:
+    keywords:
+      - "password"
+      - "passcode"
+      - "otp"
+      - "pin"
+      - "social security"
+      - "ssn"
+      - "credit card"
+      - "debit card"
+      - "bank account"
+      - "bank details"
+      - "verify your account"
+      - "billing information"
+      - "tax identification"
+      - "credentials"
+      - "routing number"
+      - "cvv"
+      - "security question"
+      - "identity verification"
+
+  social_engineering:
+    keywords:
+      - "click here"
+      - "claim your reward"
+      - "lottery"
+      - "won"
+      - "gift card"
+      - "free prize"
+      - "refund"
+      - "update information"
+      - "log in to"
+      - "sign in to"
+      - "bonus"
+      - "cash payout"
+      - "selected winner"
+      - "transfer details"
+      - "invoice attached"
+      - "payment receipt"
+
+  url:
+    # URL shorteners to check
+    shorteners:
+      - "bit.ly"
+      - "tinyurl.com"
+      - "t.co"
+      - "goo.gl"
+      - "shorte.st"
+      - "is.gd"
+      - "buff.ly"
+      - "adf.ly"
+      - "ow.ly"
+      - "rebrand.ly"
+    # Suspicious Top-Level Domains (TLDs) commonly used in phishing
+    suspicious_tlds:
+      - "xyz"
+      - "top"
+      - "tk"
+      - "ml"
+      - "ga"
+      - "cf"
+      - "gq"
+      - "buzz"
+      - "fit"
+      - "info"
+      - "work"
+      - "click"
+      - "support"
+      - "secure"
+      - "login"
+      - "update"
